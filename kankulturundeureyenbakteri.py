@@ -77,7 +77,7 @@ def transform_difference(dataframe, column_name_1, column_name_2, column_name):
 
     return dataframe
 
-
+# Tamamlandi
 # 2 deger de 40 ve alti ise hesaba katilmayacak
 # aradaki fark 30'dan az ise hesaba katilmayacak
 def transform_difference_ast_alt(dataframe, column_name_1, column_name_2, column_name):
