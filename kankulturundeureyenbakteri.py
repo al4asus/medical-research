@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_squared_error, accuracy_score, f1_score, roc_auc_score, roc_curve, auc
+from scipy.interpolate import make_interp_spline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 import matplotlib.pyplot as plt
@@ -530,14 +531,28 @@ print(df["ast_diff_decrease?"])
 fpr, tpr, thresholds = roc_curve(y_test, y_pred_rounded)
 roc_auc = auc(fpr, tpr)
 
+
+# ROC eğrisini düzgünleştirme için spline oluşturma
+X_Y_Spline = make_interp_spline(fpr, tpr, k=2)  # k=2 ile ikinci dereceden spline oluşturuyoruz
+fpr_smooth = np.linspace(0, 1, 1000)
+tpr_smooth = X_Y_Spline(fpr_smooth)
+
+"""
+fpr_inside_bounds = []
+tpr_inside_bounds = []
+for f, t in zip(fpr_smooth, tpr_smooth):
+    if 0 <= f <= 1 and 0 <= t <= 1:  # x ve y koordinatlarını kontrol et
+        fpr_inside_bounds.append(f)
+        tpr_inside_bounds.append(t)
+"""
 # ROC eğrisini çiz
 plt.figure()
-plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.plot(fpr_smooth, tpr_smooth , color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
 plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
 plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
+plt.ylim([0.0, 1.5])
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
-plt.title('Receiver Operating Characteristic (ROC) Curve')
+plt.title('Smooth Receiver Operating Characteristic (ROC) Curve')
 plt.legend(loc="lower right")
 plt.show()
