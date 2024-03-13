@@ -1,8 +1,16 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
 from xgboost import XGBRegressor
-from sklearn.metrics import mean_squared_error, accuracy_score, f1_score, roc_auc_score, roc_curve, auc
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, ExtraTreesClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import mean_squared_error, accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report, roc_auc_score, roc_curve, auc
 from scipy.interpolate import make_interp_spline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
@@ -43,7 +51,7 @@ df['antifungalkullanimi'] = df['antifungalkullanimi'].astype(int)
 # print(df["antifungalkullanimi"].astype("category"))
 # df['antifungalkullanimi'] = df['antifungalkullanimi'].astype('category')
 
-print(df)
+# print(df)
 
 # Kategorik değişkenleri one-hot encoding ile dönüştür
 df = pd.get_dummies(df, columns=['ilac', 'gebelik_haftasi_gruplu', 'tani_gruplu', 'dogum_agirligi_gruplu', 'cinsiyeti',
@@ -455,21 +463,53 @@ for index, m in df['kankültüründeüreyenbakteri'].items():
 """
 
 
-print(list(df.columns))
+# print(list(df.columns))
 
 df = df.drop(['kankültüründeüreyenbakteri'], axis=1)
+
+df.fillna(value=0, inplace=True)
+df[:] = np.nan_to_num(df)
 
 # Bağımlı değişken ve bağımsız değişkenleri belirle
 # df['ex_BPD'] = df['ex'] + df['BPD'] + df['rop']
 X = df.drop(['ex', 'BPD','rop','bilissel6ay', 'hareket6ay','bilissel9ay','hareket9ay','bilissel12ay', 'hareket12ay', 'bilissel16ay', 'hareket16ay', 'bilissel20ay'], axis=1)
 y = df['ex']
 
+
 # Veriyi eğitim ve test setlerine ayır
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=400)
 
 # XGBoost modelini oluştur
 model = XGBRegressor()
-print(X_train.to_string())
+# print(X_train.to_string())
+
+# Logistic Regression
+# model = LogisticRegression()
+
+# Random Forest
+# model = RandomForestClassifier()
+
+# Support Vector Classifier
+# model = SVC()
+
+# Gradient Boosting Classifier
+# model = GradientBoostingClassifier()
+
+# AdaBoost
+# model = AdaBoostClassifier()
+
+# K-Nearest Neighbor
+# model = KNeighborsClassifier()
+
+# The Decision Tree
+# model = DecisionTreeClassifier()
+
+# ExtraTrees
+# model = ExtraTreesClassifier()
+
+# Multi-Layer Perceptron Neural Network
+# model = MLPClassifier()
+
 # print(y_train)
 """
 full_pipeline = ColumnTransformer([('cat', OneHotEncoder(handle_unknown='ignore'), cat_attribs)], remainder='passthrough')
@@ -481,15 +521,26 @@ model.fit(X_train, y_train)
 
 # Modelin performansını değerlendir
 y_pred = model.predict(X_test)
-print(y_test, y_pred)
+# print(y_test, y_pred)
 y_pred_rounded = np.around(y_pred, decimals=0)
 
-print(y_pred_rounded)
+# print(y_pred_rounded)
 accuracy_death = accuracy_score(y_test, y_pred_rounded)
 f1_score_death = f1_score(y_test, y_pred_rounded)
+precision_death = precision_score(y_test, y_pred_rounded)
+sensitivity_death = recall_score(y_test, y_pred_rounded)
+
+# Accuracy, Precision, Sensitivity (Recall), Specificity, f1
+tn, fp, fn, tp = confusion_matrix(y_test, y_pred_rounded).ravel()
+specificity_death = tn / (tn+fp)
 
 print(f"Accuracy is: {accuracy_death}")
+print(f"Precision is: {precision_death}")
+print(f"Sensitivity is: {sensitivity_death}")
+print(f"Specificity is: {specificity_death}")
 print(f"f1 score is: {f1_score_death}")
+
+print(classification_report(y_test, y_pred_rounded))
 
 mse = mean_squared_error(y_test, y_pred)
 print(f'Mean Squared Error: {mse}')
@@ -517,15 +568,10 @@ plt.title('Değişken Önem Sıralaması')
 plt.xticks(rotation=45, ha="right")
 plt.show()
 
-plt.clf()
-
 # Area under curve
 # ROC AUC skoru hesaplama
 auc_score = roc_auc_score(y_test, y_pred_rounded)
 print("ROC AUC Score:", auc_score)
-
-print(df["ast_diff_increase?"])
-print(df["ast_diff_decrease?"])
 
 # ROC eğrisi ve alanını hesapla
 fpr, tpr, thresholds = roc_curve(y_test, y_pred_rounded)
