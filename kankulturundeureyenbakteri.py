@@ -15,6 +15,7 @@ from scipy.interpolate import make_interp_spline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 import matplotlib.pyplot as plt
+from sklearn.tree import plot_tree
 
 
 excel_file_path = 'micafungindeğismemis.xlsx'  # Excel dosyasının adını belirtin
@@ -135,333 +136,6 @@ df = transform_difference(df, "ıl61", "ıl6son", "il6_diff")
 # df = df.drop(['ast1', 'ast2'], axis=1)
 # df = df.drop(['alt1', 'alt2'], axis=1)
 
-"""
-df = df.drop(['proc1', 'proc2'], axis=1)
-
-df['crp_dif'] = df['crp2'] - df['crp1']
-print(df['crp_dif'])
-df = df.drop(['crp1', 'crp2'], axis=1)
-
-df['alt_dif'] = df['alt2'] - df['alt1']
-print(df['alt_dif'])
-df = df.drop(['alt1', 'alt2'], axis=1)
-
-df['ast_dif'] = df['ast2'] - df['ast1']
-print(df['ast_dif'])
-df = df.drop(['ast1', 'ast2'], axis=1)
-
-df['urikasit_dif'] = df['urikasit2'] - df['urikasit1']
-print(df['urikasit_dif'])
-df = df.drop(['urikasit1', 'urikasit2'], axis=1)
-
-df['krea_dif'] = df['krea2'] - df['krea1']
-print(df['krea_dif'])
-df = df.drop(['krea1', 'krea2'], axis=1)
-
-df['hb_dif'] = df['hbson'] - df['hb1']
-print(df['hb_dif'])
-df = df.drop(['hb1', 'hbson'], axis=1)
-
-df['mpv_dif'] = df['mpvson'] - df['mpv1']
-print(df['mpv_dif'])
-df = df.drop(['mpv1', 'mpvson'], axis=1)
-
-df['wbc_dif'] = df['wbcson'] - df['wbc1']
-print(df['wbc_dif'])
-df = df.drop(['wbc1', 'wbcson'], axis=1)
-
-df['trombosit_dif'] = df['trombositson'] - df['trombosit']
-print(df['trombosit_dif'])
-df = df.drop(['trombosit', 'trombositson'], axis=1)
-
-df['pct_dif'] = df['pctson'] - df['pct1']
-print(df['pct_dif'])
-df = df.drop(['pct1', 'pctson'], axis=1)
-
-df['potasyum_dif'] = df['potasyumson'] - df['potasyum1']
-print(df['potasyum_dif'])
-df = df.drop(['potasyum1', 'potasyumson'], axis=1)
-
-df['notrofil_dif'] = df['notrofilson'] - df['notrofil1']
-print(df['notrofil_dif'])
-df = df.drop(['notrofil1', 'notrofilson'], axis=1)
-
-df['pdw_dif'] = df['pdwson'] - df['pdw1']
-print(df['pdw_dif'])
-df = df.drop(['pdw1', 'pdwson'], axis=1)
-
-df['ıg_dif'] = df['ıgson'] - df['ıg1']
-print(df['ıg_dif'])
-df = df.drop(['ıg1', 'ıgson'], axis=1)
-
-df = df.drop(['ıl61', 'ıl6son'], axis=1)
-"""
-
-
-
-
-"""
-df["mrse"] = df["kankültüründeüreyenbakteri"].str.contains("mrse")
-df["staph_epidermidis"] = df["kankültüründeüreyenbakteri"].str.contains("staph_epidermidis")
-
-
-# Yeni bir boolean sütunu oluştur ve varsayılan olarak False atayın
-df['epi_mrse'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, cell_value in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    cell_value_str = str(cell_value).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if cell_value_str.lower() == 'staph_epidermidis,mrse' or cell_value_str.lower() == 'mrse,staph_epidermidis':
-        df.at[index, 'epi_mrse'] = True
-
-
-
-
-
-df["enterobacter"] = df["kankültüründeüreyenbakteri"].str.contains("enterobacter")
-df["ecoli"] = df["kankültüründeüreyenbakteri"].str.contains("ecoli")
-
-df['entero_eco'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, a in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    a_str = str(a).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if a_str.lower() == 'enterobacter,ecoli' or a_str.lower() == 'ecoli,enterobacter':
-        df.at[index, 'entero_eco'] = True
-
-
-
-
-
-
-df["stenotrophomonas_maltophilia"] = df["kankültüründeüreyenbakteri"].str.contains("stenotrophomonas_maltophilia")
-
-
-
-
-df["klebsiella_pnumonia"] = df["kankültüründeüreyenbakteri"].str.contains("klebsiella_pnumonia")
-df['klebpmrse'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, b in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    b_str = str(b).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if b_str.lower() == 'klebsiella_pnumonia,mrse' or b_str.lower() == 'mrse,klebsiella_pnumonia':
-        df.at[index, 'klebpmrse'] = True
-
-
-
-
-
-
-df["ralstonia_picketti"] = df["kankültüründeüreyenbakteri"].str.contains("ralstonia_picketti")
-
-df['ralpklebp'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, c in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    c_str = str(c).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if c_str.lower() == 'klebsiella_pnumonia,ralstonia_picketti' or c_str.lower() == 'ralstonia_picketti,klebsiella_pnumonia':
-        df.at[index, 'ralpklebp'] = True
-
-
-
-
-
-df["klebsiella"] = df["kankültüründeüreyenbakteri"].str.contains("klebsiella")
-df['klebsmrse'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, d in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    d_str = str(d).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if d_str.lower() == 'klebsiella,mrse' or d_str.lower() == 'mrse,klebsiella':
-        df.at[index, 'klebsmrse'] = True
-
-
-
-
-
-
-df['2mrse'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, e in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    e_str = str(e).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if e_str.lower() == 'mrse,mrse' or e_str.lower() == 'mrse,mrse':
-        df.at[index, '2mrse'] = True
-
-
-
-
-
-df["enterokok"] = df["kankültüründeüreyenbakteri"].str.contains("enterokok")
-
-
-
-df["streptokkous_parasanguinis"] = df["kankültüründeüreyenbakteri"].str.contains("streptokkous_parasanguinis")
-
-
-
-df["esbl"] = df["kankültüründeüreyenbakteri"].str.contains("esbl")
-
-
-
-
-
-
-df['staphe_stapha_eta'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, f in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    f_str = str(f).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if f_str.lower() == 'staph_areus_eta,staph_epidermidis' or f_str.lower() == 'staph_epidermidis,staph_areus_eta':
-        df.at[index, 'staphe_stapha_eta'] = True
-
-
-
-
-
-df['mrse,staph_epidermidis,kateterde+'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, g in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    g_str = str(g).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if g_str.lower() == 'mrse,staph_epidermidis,kateterde+' or g_str.lower() == 'mrse,kateterde+,staph_epidermidis,' or  g_str.lower() == 'kateterde+,mrse,staph_epidermidis' or g_str.lower() == 'kateterde+,staph_epidermidis,mrse,' or g_str.lower() == 'staph_epidermidis,kateterde+,mrse' or g_str.lower() == 'staph_epidermidis,mrse,kateterde+':
-        df.at[index, 'mrse,staph_epidermidis,kateterde+'] = True
-
-
-
-
-
-df["klebsiella_eta+kateter"] = df["kankültüründeüreyenbakteri"].str.contains("klebsiella_eta+kateter")
-
-
-
-df["staph_hominis_periton"] = df["kankültüründeüreyenbakteri"].str.contains("staph_hominis_periton")
-df['klebsiella,staph_hominis_periton'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, h in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    h_str = str(h).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if h_str.lower() == 'klebsiella,staph_hominis_periton' or h_str.lower() == 'staph_hominis_periton,klebsiella':
-        df.at[index, 'klebsiella,staph_hominis_periton'] = True
-
-
-
-
-
-
-df['klebsiella,esbl+,enteroccoccus_faecium'] = False
-# Her bir hücredeki veri türlerini kontrol et
-for index, i in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    i_str = str(i).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if i_str.lower() == 'klebsiella,esbl+,enteroccoccus_faecium':
-        df.at[index, 'klebsiella,esbl+,enteroccoccus_faecium'] = True
-
-
-
-
-
-
-df["serratia,klebsiella,staph_eta"] = df["kankültüründeüreyenbakteri"].str.contains("serratia,klebsiella,staph_eta")
-df['serratia,klebsiella,staph(eta)'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, j in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    j_str = str(j).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if j_str.lower() == 'serratia,klebsiella,staph_eta' or j_str.lower() == 'staph_eta,serratia,klebsiella':
-        df.at[index, 'serratia,klebsiella,staph_eta'] = True
-
-
-
-
-
-df["mrse,serratia,staph_hominis"] = df["kankültüründeüreyenbakteri"].str.contains("mrse,serratia,staph_hominis")
-df['mrse,serratia,staph_hominis'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, k in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    k_str = str(k).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if k_str.lower() == 'serratia,staph_hominis,mrse' or k_str.lower() == 'mrse,serratia,staph_hominis':
-        df.at[index, 'mrse,serratia,staph_hominis'] = True
-
-
-
-
-
-
-df["klebsiella_idrarda,streptococcus_mitis_oralis_idrarda,candida"] = df["kankültüründeüreyenbakteri"].str.contains("klebsiella_idrarda,streptococcus_mitis_oralis_idrarda,candida")
-df['klebsiella_idrarda,streptococcus_mitis_oralis_idrarda,candida'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, l in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    l_str = str(l).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if l_str.lower() == 'klebsiella_idrarda,streptococcus_mitis_oralis_idrarda,candida' or l_str.lower() == 'candida,klebsiella_idrarda,streptococcus_mitis_oralis_idrarda':
-        df.at[index, 'klebsiella_idrarda,streptococcus_mitis_oralis_idrarda,candida'] = True
-
-
-
-
-
-
-df["serratia_marcasens"] = df["kankültüründeüreyenbakteri"].str.contains("serratia_marcasens")
-
-
-
-
-df["klebsiella,staph_capitis,stenotrophomonas_maltophilia,rothia_mucilaginosa_pertion"] = df["kankültüründeüreyenbakteri"].str.contains("klebsiella,staph_capitis,stenotrophomonas_maltophilia,rothia_mucilaginosa_pertion")
-df['klebsiella,staph_capitis,stenotrophomonas_maltophilia,rothia_mucilaginosa_pertion'] = False
-
-# Her bir hücredeki veri türlerini kontrol et
-for index, m in df['kankültüründeüreyenbakteri'].items():
-    # Her bir hücreyi boşluksuz bir şekilde al
-    m_str = str(m).strip()
-
-    # Eğer hücrede sadece "staph epidermis" ve "mrse" bulunuyorsa, yeni sütunu True olarak işaretle
-    if m_str.lower() == 'klebsiella,staph_capitis,stenotrophomonas_maltophilia,rothia_mucilaginosa_pertion' or m_str.lower() == 'klebsiella,staph_capitis,stenotrophomonas_maltophilia,rothia_mucilaginosa_pertion':
-        df.at[index, 'klebsiella,staph_capitis,stenotrophomonas_maltophilia,rothia_mucilaginosa_pertion'] = True
-
-
-"""
-
 
 # print(list(df.columns))
 
@@ -487,13 +161,13 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 #model = LogisticRegression()
 
 # Random Forest
-#model = RandomForestClassifier()
+model = RandomForestClassifier()
 
 # Support Vector Classifier
 #model = SVC()
 
 # Gradient Boosting Classifier
-model = GradientBoostingClassifier()
+#model = GradientBoostingClassifier()
 
 # AdaBoost
 #model = AdaBoostClassifier()
@@ -518,6 +192,12 @@ encoder = full_pipeline.fit(X_train)
 X_train = encoder.transform(X_train)
 """
 model.fit(X_train, y_train)
+
+for i, tree in enumerate(model.estimators_):
+    plt.figure(figsize=(20, 10))
+    plot_tree(tree, filled=True, feature_names=X.columns, class_names=["0", "1"], fontsize=10)
+    plt.title(f"Decision Tree {i+1}")
+    plt.show()
 
 # Modelin performansını değerlendir
 y_pred = model.predict(X_test)
