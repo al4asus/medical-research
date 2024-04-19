@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
-from xgboost import XGBRegressor
+from xgboost import XGBRegressor, plot_tree, to_graphviz
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, ExtraTreesClassifier
 from sklearn.svm import SVC
@@ -154,14 +154,14 @@ y = df['ex']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=400)
 
 # XGBoost modelini oluştur
-#model = XGBRegressor()
+model = XGBRegressor(n_estimators=100)
 # print(X_train.to_string())
 
 #Logistic Regression
 #model = LogisticRegression()
 
 # Random Forest
-model = RandomForestClassifier()
+#model = RandomForestClassifier()
 
 # Support Vector Classifier
 #model = SVC()
@@ -192,12 +192,15 @@ encoder = full_pipeline.fit(X_train)
 X_train = encoder.transform(X_train)
 """
 model.fit(X_train, y_train)
-
+"""
 for i, tree in enumerate(model.estimators_):
     plt.figure(figsize=(20, 10))
     plot_tree(tree, filled=True, feature_names=X.columns, class_names=["0", "1"], fontsize=10)
     plt.title(f"Decision Tree {i+1}")
     plt.show()
+"""
+xgb_tree = to_graphviz(model, num_trees=0)
+xgb_tree.render('tree_0', format='png', cleanup=True)
 
 # Modelin performansını değerlendir
 y_pred = model.predict(X_test)
