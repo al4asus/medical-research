@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
-from xgboost import XGBRegressor, plot_tree, to_graphviz
+from xgboost import XGBRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, ExtraTreesClassifier
 from sklearn.svm import SVC
@@ -16,6 +16,8 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
+
+import os
 
 
 excel_file_path = 'micafungindeğismemis.xlsx'  # Excel dosyasının adını belirtin
@@ -154,7 +156,7 @@ y = df['ex']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=400)
 
 # XGBoost modelini oluştur
-model = XGBRegressor(n_estimators=100)
+#model = XGBRegressor()
 # print(X_train.to_string())
 
 #Logistic Regression
@@ -167,7 +169,7 @@ model = XGBRegressor(n_estimators=100)
 #model = SVC()
 
 # Gradient Boosting Classifier
-#model = GradientBoostingClassifier()
+model = GradientBoostingClassifier()
 
 # AdaBoost
 #model = AdaBoostClassifier()
@@ -193,14 +195,44 @@ X_train = encoder.transform(X_train)
 """
 model.fit(X_train, y_train)
 """
+# showing all trees with random forest method
 for i, tree in enumerate(model.estimators_):
     plt.figure(figsize=(20, 10))
     plot_tree(tree, filled=True, feature_names=X.columns, class_names=["0", "1"], fontsize=10)
     plt.title(f"Decision Tree {i+1}")
     plt.show()
 """
-xgb_tree = to_graphviz(model, num_trees=0)
-xgb_tree.render('tree_0', format='png', cleanup=True)
+
+"""
+# Masaüstünde bir klasör oluştur
+desktop_path = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+folder_path = os.path.join(desktop_path, 'gbc')
+
+if not os.path.exists(folder_path):
+    os.makedirs(folder_path)
+"""
+# showing all trees with gradient boosting classifier method
+
+# Eğitim veri setinizdeki özellik isimlerini alın
+feature_names = list(X_train.columns)
+
+# Tüm ağaçları görselleştirin
+for i, estimator in enumerate(model.estimators_):
+    plt.figure(figsize=(19, 10))
+    plot_tree(estimator[0], filled=True, feature_names=feature_names)  # feature_names parametresini ekleyin
+    plt.title(f"Tree {i + 1}")
+    plt.show()
+
+"""
+# çalışmadı değişken adlarını yazınca hocaya sor
+    # Ağacın görselini kaydet
+    file_path = os.path.join(folder_path, f"ağaç_{i + 1}.png")
+    plt.savefig(file_path)
+    plt.close()
+
+print("Tüm ağaç görselleri başarıyla kaydedildi.")
+"""
+
 
 # Modelin performansını değerlendir
 y_pred = model.predict(X_test)
