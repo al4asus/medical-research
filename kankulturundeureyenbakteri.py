@@ -16,9 +16,10 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 import matplotlib.pyplot as plt
 from sklearn.tree import plot_tree
+from sklearn.model_selection import KFold, cross_val_score
 
 import os
-
+import shap
 
 excel_file_path = 'micafungindeğismemis.xlsx'  # Excel dosyasının adını belirtin
 df = pd.read_excel(excel_file_path, na_values=['#BOŞ!', '#NULL!'])
@@ -151,7 +152,6 @@ df[:] = np.nan_to_num(df)
 X = df.drop(['ex', 'BPD','rop','bilissel6ay', 'hareket6ay','bilissel9ay','hareket9ay','bilissel12ay', 'hareket12ay', 'bilissel16ay', 'hareket16ay', 'bilissel20ay'], axis=1)
 y = df['ex']
 
-
 # Veriyi eğitim ve test setlerine ayır
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=400)
 
@@ -212,7 +212,7 @@ if not os.path.exists(folder_path):
     os.makedirs(folder_path)
 """
 # showing all trees with gradient boosting classifier method
-
+"""
 # Eğitim veri setinizdeki özellik isimlerini alın
 feature_names = list(X_train.columns)
 
@@ -222,7 +222,7 @@ for i, estimator in enumerate(model.estimators_):
     plot_tree(estimator[0], filled=True, feature_names=feature_names)  # feature_names parametresini ekleyin
     plt.title(f"Tree {i + 1}")
     plt.show()
-
+"""
 """
 # çalışmadı değişken adlarını yazınca hocaya sor
     # Ağacın görselini kaydet
@@ -260,6 +260,17 @@ print(classification_report(y_test, y_pred_rounded))
 mse = mean_squared_error(y_test, y_pred)
 print(f'Mean Squared Error: {mse}')
 
+"""
+# k fold validation
+k_folds = KFold(n_splits=5)
+
+scores = cross_val_score(model, X, y, cv=k_folds)
+
+print("Cross Validation Scores: ", scores)
+print("Average CV Score: ", scores.mean())
+print("Number of CV Scores used in Average: ", len(scores))
+"""
+
 # Özellik önem sıralamasını al
 feature_importances = model.feature_importances_
 
@@ -273,6 +284,14 @@ sorted_feature_importance = sorted(feature_importance_dict.items(), key=lambda x
 print("\nDeğişkenlerin Önem Sıralaması:")
 for feature, importance in sorted_feature_importance:
     print(f"{feature}: {importance}")
+
+# SHAP
+shap.initjs()
+
+explainer = shap.Explainer(model)
+shap_values = explainer.shap_values(X_test)
+
+shap.summary_plot(shap_values, X_test)
 
 # Önem sıralamalarını görselleştir
 plt.figure(figsize=(15, 8))
@@ -306,6 +325,7 @@ for f, t in zip(fpr_smooth, tpr_smooth):
         fpr_inside_bounds.append(f)
         tpr_inside_bounds.append(t)
 """
+
 # ROC eğrisini çiz
 plt.figure()
 plt.plot(fpr_smooth, tpr_smooth , color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
@@ -317,3 +337,5 @@ plt.ylabel('True Positive Rate')
 plt.title('Receiver Operating Characteristic curve (ROC)')
 plt.legend(loc="lower right")
 plt.show()
+
+
