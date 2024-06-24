@@ -280,7 +280,7 @@ feature_importance_dict = dict(zip(X.columns, feature_importances))
 # Önem sıralamasına göre değişkenleri sırala
 sorted_feature_importance = sorted(feature_importance_dict.items(), key=lambda x: x[1], reverse=True)
 
-# Sonuçları yazdır
+# Sonuçları yazdırma kısmı
 print("\nDeğişkenlerin Önem Sıralaması:")
 for feature, importance in sorted_feature_importance:
     print(f"{feature}: {importance}")
@@ -293,7 +293,7 @@ shap_values = explainer.shap_values(X_test)
 
 shap.summary_plot(shap_values, X_test)
 
-# Önem sıralamalarını görselleştir
+# Önem sıralamalarını görselleştirme kısmı
 plt.figure(figsize=(15, 8))
 plt.bar(range(len(feature_importances)), feature_importances, tick_label=X.columns)
 plt.xlabel('Variables')
@@ -303,16 +303,15 @@ plt.xticks(rotation=45, ha="right")
 plt.show()
 
 # Area under curve
-# ROC AUC skoru hesaplama
+# ROC AUC skoru hesaplama kısmı
 auc_score = roc_auc_score(y_test, y_pred_rounded)
 print("ROC AUC Score:", auc_score)
 
-# ROC eğrisi ve alanını hesapla
+# ROC eğrisi ve alanını hesaplayan kısım
 fpr, tpr, thresholds = roc_curve(y_test, y_pred_rounded)
 roc_auc = auc(fpr, tpr)
 
-
-# ROC eğrisini düzgünleştirme için spline oluşturma
+# ROC eğrisini düzgünleştirme için spline oluşturma kısmı
 X_Y_Spline = make_interp_spline(fpr, tpr, k=2)  # k=2 ile ikinci dereceden spline oluşturuyoruz
 fpr_smooth = np.linspace(0, 1, 1000)
 tpr_smooth = X_Y_Spline(fpr_smooth)
@@ -326,7 +325,7 @@ for f, t in zip(fpr_smooth, tpr_smooth):
         tpr_inside_bounds.append(t)
 """
 
-# ROC eğrisini çiz
+# ROC eğrisi çizilen kısım
 plt.figure()
 plt.plot(fpr_smooth, tpr_smooth , color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
 plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
