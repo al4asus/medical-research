@@ -262,7 +262,7 @@ plt.show()
 model_dir = 'C:/Users/hasan/Desktop/model_save'
 if not os.path.exists(model_dir):
     os.makedirs(model_dir)
-
+#
 # Modeli kaydet
 model_path = os.path.join(model_dir, 'model.pkl')
 joblib.dump(model, model_path)
