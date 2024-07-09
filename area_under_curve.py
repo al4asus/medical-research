@@ -104,7 +104,6 @@ def transform_difference_ast_alt(dataframe, column_name_1, column_name_2, column
     return dataframe
 
 # print(df)
-
 df = transform_difference(df, "proc1", "proc2", "proc_diff")
 df = transform_difference(df, "crp1", "crp2", "crp_diff")
 df = transform_difference_ast_alt(df, "alt1", "alt2", "alt_diff")
@@ -134,7 +133,16 @@ df[:] = np.nan_to_num(df)
 
 # Bağımlı değişken ve bağımsız değişkenleri belirle
 # df['ex_BPD'] = df['ex'] + df['BPD'] + df['rop']
-X = df.drop(['ex', 'BPD','rop','bilissel6ay', 'hareket6ay','bilissel9ay','hareket9ay','bilissel12ay', 'hareket12ay', 'bilissel16ay', 'hareket16ay', 'bilissel20ay'], axis=1)
+# X = df.drop(['ex', 'BPD','rop','bilissel6ay', 'hareket6ay','bilissel9ay','hareket9ay','bilissel12ay', 'hareket12ay', 'bilissel16ay', 'hareket16ay', 'bilissel20ay'], axis=1)
+"""
+for x in ["proc_diff_increase?", "proc_decrease?", "potasyumdüşüklüğü", "IKK", "ast_increase?", "ast_decrease?", "urikasit_increase?", "urikasit_decrease?"]:
+    if x in list(df.columns):
+        print("FOUND")
+    else:
+        print(f"NOT FOUND {x}")
+"""
+X = df[["proc_diff_increase?", "proc_diff_decrease?", "potasyumdüşüklüğü", "IKK", "ast_diff_increase?", "ast_diff_decrease?", "urikasit_diff_increase?", "urikasit_diff_decrease?"]]
+print(X)
 y = df['ex']
 
 # Veriyi eğitim ve test setlerine ayır
@@ -175,6 +183,7 @@ model = GradientBoostingClassifier()
 
 model.fit(X_train, y_train)
 
+# print(X_test.columns)
 # Modelin performansını değerlendir
 y_pred = model.predict(X_test)
 # print(y_test, y_pred)
